@@ -1,0 +1,62 @@
+﻿@page "/"
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+@inject IJSRuntime JsRuntime
+@rendermode InteractiveServer
+@using sahibinden_frontend
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject UserService userService
+
+
+<link rel="stylesheet" href="css/home.css">
+
+
+
+<div class="landing-page">
+    
+    <NavBarLayout/>
+
+    @if(string.IsNullOrEmpty(userService.Username))
+    {
+        <main class="main-content">
+            <h1>Hoşgeldiniz!</h1>
+            <p>En iyi fırsatlar ve ilanlar için doğru yerdesiniz.</p>
+            <a href="/login" class="cta-button btn-success">Giriş Yap</a>
+            <br>
+            <a href="/register" class="cta-button btn-success">Kayıt Ol</a>
+        </main>
+    }
+    else
+    {
+        // user is signed in
+        <main class="main-content">
+            <h1>Hoşgeldiniz, @userService.Username!</h1>
+            <p>En iyi fırsatlar ve ilanlar için doğru yerdesiniz.</p>
+        </main>
+        
+    }
+
+    <FooterLayout/>
+
+</div>
+
+@code
+{
+       private bool firstRender = true;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            userService.OnChange += StateHasChanged;
+            userService.Username = await JsRuntime.InvokeAsync<string>("localStorage.getItem", "username");
+            this.firstRender = false;
+        }
+    }
+
+    public void Dispose()
+    {
+        userService.OnChange -= StateHasChanged;
+    }
+}

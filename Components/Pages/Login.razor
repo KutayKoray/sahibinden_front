@@ -1,0 +1,94 @@
+﻿@page "/login"
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
+@rendermode InteractiveServer
+@layout LoginLayout
+@using sahibinden_frontend
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+
+<link href="css/login.css" rel="stylesheet" />
+
+<div class="login-card">
+    <img src="favicon.png" alt="Logo" class="logo"/>
+    <h3>Sahibinden</h3>
+    <br>
+    <br>
+    <h4>Login</h4>
+    <br>
+    <div class="input-container">
+        <InputText @bind-Value="username" placeholder="Username" class="input-field" />
+        <InputText @bind-Value="password" placeholder="Password" type="password" class="input-field" />
+    </div>
+    <p>@message</p>
+    <button @onclick="HandleLogin" class="login-button">Login</button>
+    <br>
+    <br>
+    <p>Not registered? <a href="/register">Register here</a></p>
+</div>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="popup">
+        <p>@errorMessage</p>
+        <button @onclick="ClosePopup">Close</button>
+    </div>
+}
+
+
+
+
+@code {
+    private string? username;
+    private string? password;
+    private string? message;
+    private string? errorMessage;
+
+    private async Task HandleLogin()
+    {
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        {
+            errorMessage = "Username and password cannot be empty.";
+            return;
+        }
+
+        var data = new
+        {
+            Username = username,
+            Password = password
+        };
+
+        try
+        {
+            var response = await Http.PostAsJsonAsync("http://localhost:8000/user/login", data);
+
+            if (response.IsSuccessStatusCode)
+            {
+                errorMessage = null;
+                // kullanıcı doğru bilgi girdi sayfa yönlendirmesi yapılacak.
+                message = "Login successful.";
+                await SaveToLocalStorage("username", data.Username);
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                errorMessage = $"Login failed: {response.ReasonPhrase}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred: {ex.Message}";
+        }
+    }
+
+    private async Task SaveToLocalStorage(string key, string value)
+    {
+        await JsRuntime.InvokeVoidAsync("localStorage.setItem", key, value);
+    }
+
+    private void ClosePopup()
+    {
+        errorMessage = null;
+    }
+}

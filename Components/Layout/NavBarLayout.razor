@@ -1,0 +1,71 @@
+﻿@inject NavigationManager NavigationManager
+@inject HttpClient Http
+@inject IJSRuntime JsRuntime
+@rendermode InteractiveServer
+@layout LoginLayout
+@using sahibinden_frontend
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject UserService userService
+
+<link rel="stylesheet" href="css/navBarLayout.css">
+
+<header class="header">
+    <div class="logo-container">
+        <img src="favicon.png" alt="Logo" class="logo" />
+    </div>
+    <nav class="nav">
+        <ul>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li> 
+            <li><a href="/">Anasayfa</a></li>
+            <li><a href="/emlak">Emlak</a></li>
+            <li><a href="/araclar">Araçlar</a></li>
+            <li><a href="/ikinci_el">İkinci El</a></li>
+        </ul>
+    </nav>
+    <div class="login_register">
+        @if (string.IsNullOrEmpty(userService.Username))
+        {
+            <a href="/login" class="">Giriş Yap</a>
+            <a href="/register" class="">Kayıt Ol</a>
+        }
+        else
+        {
+            <div class="dropdown">
+                <button class="dropbtn">Profil</button>
+                <a href=""></a>
+                <a href=""></a>
+                <div class="dropdown-content">
+                    <p>@userService.Username</p>
+                    <a href="/favoriler">Favoriler</a>
+                    <a href="/ilanlarim">İlanlarım</a>
+                    <a href="/" @onclick="Logout">Çıkış Yap</a>
+
+                </div>
+            </div>            
+        }
+    </div>
+</header>
+
+@code {
+    private bool firstRender = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            this.firstRender = false;
+            userService.Username = await JsRuntime.InvokeAsync<string>("localStorage.getItem", "username");
+            StateHasChanged();
+        }
+    }
+
+    private void Logout()
+    {
+        userService.Username = null;
+        JsRuntime.InvokeVoidAsync("localStorage.removeItem", "username");
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,128 @@
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# NuGet packages
+*.nupkg
+*.snupkg
+# The packages folder can be ignored because of the restore feature
+**/[Pp]ackages/*
+# except build/, which is used as an MSBuild target.
+!**/[Pp]ackages/build/
+# Uncomment if necessary however generally it will be regenerated when needed
+#!**/[Pp]ackages/repositories.config
+
+# Microsoft Visual Studio
+.vscode/
+.vs/
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/*.code-workspace
+.vscode/extensions.json
+.vscode/*.workspace
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Mono Auto Generated Files
+mono_crash.*
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# VS Code
+.vscode/
+
+# Rider
+.idea/
+*.sln.iml
+
+# Other
+.localhistory/
+*.swp
+*~
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+*.csproj.iml
+
+# Coverlet Coverage Tool
+coverage*.json
+coverage*.xml
+coverage*.info
+coverage*.html
+coverage*.cobertura.xml
+
+# IIS
+[Ii][Nn][Ee][Tt][Pp][Uu][Bb]/
+
+# log files
+*.log
+
+# user-specific files
+*.rsuser
+*.user
+*.userosscache
+*.sln.docstates
+
+# Yarn
+.yarn/
+.pnp.*
+.pnp.js
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# DotNetTool
+.dotnet_tool/
+
+# WebAssembly
+wwwroot/build/
+
+# Local development certificate
+*.pfx
+
+# Razor components
+_blazor
+
+# NPM packages
+node_modules/
+
+# Compiled files
+*.dll
+*.exe
+*.so
+*.dylib
+*.pdb
+*.mdb
+
+# Static files
+wwwroot/css/
+wwwroot/js/

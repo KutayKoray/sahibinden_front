@@ -1,0 +1,86 @@
+﻿@page "/register"
+@layout LoginLayout
+@inject HttpClient Http
+@rendermode InteractiveServer
+
+<link href="css/register.css" rel="stylesheet" />
+
+
+
+<div class="register-card">
+    <img src="favicon.png" alt="Logo" class="logo"/>
+    <h3>Register</h3>
+    <div class="input-container">
+        <InputText @bind-Value="name" placeholder="Name" class="input-field" />
+        <InputText @bind-Value="surname" placeholder="Surname" class="input-field" />
+        <InputText @bind-Value="username" placeholder="Username" class="input-field" />
+        <InputText @bind-Value="email" placeholder="E_mail" class="input-field" />
+        <InputText @bind-Value="password" placeholder="Password" type="password" class="input-field" />
+        <InputText @bind-Value="phoneNumber" placeholder="555 555 55 55" class="input-field" />
+    </div>
+    <button @onclick="HandleRegister" class="register-button">Register</button>
+    <p>@message</p>
+    <p>Already registered? <a href="/login">Login here</a></p>
+</div>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="popup">
+        <p>@errorMessage</p>
+        <button @onclick="ClosePopup">Close</button>
+    </div>
+}
+
+@code {
+    private string? name;
+    private string? surname;
+    private string? username;
+    private string? password;
+    private string? message;
+    private string? errorMessage;
+    private string? email;
+    private string? phoneNumber;
+
+    private async Task HandleRegister()
+    {
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(name) || string.IsNullOrEmpty(surname) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(phoneNumber))
+        {
+            errorMessage = "All fields are required.";
+            return;
+        }
+
+        var data = new
+        {
+            Username = username,
+            Password = password,
+            Name = name,
+            Surname = surname,
+            Email = email,
+            PhoneNumber = phoneNumber
+        };
+
+        try
+        {
+            var response = await Http.PostAsJsonAsync("http://localhost:8000/user/register", data);
+
+            if (response.IsSuccessStatusCode)
+            {
+                message = "Registration successful";
+                errorMessage = null;
+            }
+            else
+            {
+                errorMessage = $"Registration failed: {response.ReasonPhrase}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred: {ex.Message}";
+        }
+    }
+
+    private void ClosePopup()
+    {
+        errorMessage = null;
+    }
+}
