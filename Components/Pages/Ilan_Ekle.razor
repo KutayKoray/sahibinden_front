@@ -1,0 +1,254 @@
+@page "/ilan_ekle"
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+<link rel="stylesheet" href="css/ilan_ekle.css">
+
+<div class="container">
+    <h3>İlan Kaydet</h3>
+    <div>
+        <label for="category">Kategori:</label>
+        <select id="category" @bind="selectedCategory">
+            <option value="">Kategori Seçiniz</option>
+            <option value="Araba">Araba</option>
+            <option value="ikinci_el">İkinci El</option>
+            <option value="emlak">Emlak</option>
+        </select>
+    </div>
+
+    <div class="inputFields">
+        @if (selectedCategory == "Araba")
+    {
+        <div class="labeldiv">
+            <label for="title">Başlık:</label>
+            <input id="title" @bind="carListing.Title" />
+
+            <label for="description">Açıklama:</label>
+            <input id="description" @bind="carListing.Description" />
+
+            <label for="price">Fiyat:</label>
+            <input id="price" type="number" @bind="carListing.Price" />
+
+            <label for="date">Tarih:</label>
+            <input id="date" type="date" @bind="carListing.Date" />
+
+            <label for="imageFileName">Resim Dosyası Adı:</label>
+            <input id="imageFileName" @bind="carListing.ImageFileName" />
+
+            <label for="brand">Marka:</label>
+            <input id="brand" @bind="carListing.Brand" />
+
+            <label for="model">Model:</label>
+            <input id="model" @bind="carListing.Model" />
+
+            <label for="year">Yıl:</label>
+            <input id="year" type="number" @bind="carListing.Year" />
+
+            <label for="km">Km:</label>
+            <input id="km" type="number" @bind="carListing.Km" />
+
+            <label for="fuelType">Yakıt Türü:</label>
+            <input id="fuelType" @bind="carListing.FuelType" />
+
+            <label for="gearType">Vites Türü:</label>
+            <input id="gearType" @bind="carListing.GearType" />
+
+            <label for="color">Renk:</label>
+            <input id="color" @bind="carListing.Color" />
+
+            <label for="engineSize">Motor Hacmi:</label>
+            <input id="engineSize" type="number" @bind="carListing.EngineSize" />
+
+            <label for="horsePower">Beygir Gücü:</label>
+            <input id="horsePower" type="number" @bind="carListing.HorsePower" />
+
+            <label for="bodyType">Gövde Türü:</label>
+            <input id="bodyType" @bind="carListing.BodyType" />
+
+            <button @onclick="SaveCarListing">Kaydet</button>
+        </div>
+    }
+    else if (selectedCategory == "ikinci_el")
+    {
+        <div class="labeldiv">
+            <label for="title">Başlık:</label>
+            <input id="title" @bind="secondHandListing.Title" />
+
+            <label for="description">Açıklama:</label>
+            <input id="description" @bind="secondHandListing.Description" />
+
+            <label for="price">Fiyat:</label>
+            <input id="price" type="number" @bind="secondHandListing.Price" />
+
+            <label for="date">Tarih:</label>
+            <input id="date" type="date" @bind="secondHandListing.Date" />
+
+            <label for="imageFileName">Resim Dosyası Adı:</label>
+            <input id="imageFileName" @bind="secondHandListing.ImageFileName" />
+
+            <label for="brand">Marka:</label>
+            <input id="brand" @bind="secondHandListing.Brand" />
+
+            <label for="type">Tür:</label>
+            <input id="type" @bind="secondHandListing.Type" />
+
+            <label for="condition">Durum:</label>
+            <input id="condition" @bind="secondHandListing.Condition" />
+
+            <button @onclick="SaveSecondHandListing">Kaydet</button>
+        </div>
+    }
+    else if (selectedCategory == "emlak")
+    {
+        <div class="labeldiv">
+            <label for="title">Başlık:</label>
+            <input id="title" @bind="propertyListing.Title" />
+
+            <label for="description">Açıklama:</label>
+            <input id="description" @bind="propertyListing.Description" />
+
+            <label for="price">Fiyat:</label>
+            <input id="price" type="number" @bind="propertyListing.Price" />
+
+            <label for="date">Tarih:</label>
+            <input id="date" type="date" @bind="propertyListing.Date" />
+
+            <label for="imageFileName">Resim Dosyası Adı:</label>
+            <input id="imageFileName" @bind="propertyListing.ImageFileName" />
+
+            <label for="m2">Metrekare:</label>
+            <input id="m2" type="number" @bind="propertyListing.M2" />
+
+            <label for="roomCount">Oda Sayısı:</label>
+            <input id="roomCount" type="number" @bind="propertyListing.RoomCount" />
+
+            <label for="age">Yaş:</label>
+            <input id="age" type="number" @bind="propertyListing.Age" />
+
+            <label for="floor">Kat:</label>
+            <input id="floor" type="number" @bind="propertyListing.Floor" />
+
+            <label for="heatingType">Isıtma Türü:</label>
+            <input id="heatingType" @bind="propertyListing.HeatingType" />
+
+            <label for="buildingType">Bina Türü:</label>
+            <input id="buildingType" @bind="propertyListing.BuildingType" />
+
+            <label for="location">Konum:</label>
+            <input id="location" @bind="propertyListing.Location" />
+
+            <label for="status">Durum:</label>
+            <input id="status" @bind="propertyListing.Status" />
+
+            <button @onclick="SavePropertyListing">Kaydet</button>
+        </div>
+    }
+    </div>    
+</div>
+
+@code {
+    private string selectedCategory = "";
+
+    private CarListing carListing = new CarListing();
+    private SecondHandListing secondHandListing = new SecondHandListing();
+    private PropertyListing propertyListing = new PropertyListing();
+
+    private async Task SaveCarListing()
+    {
+        var response = await Http.PostAsJsonAsync("http://localhost:8000/listing/savecar", carListing);
+        // Handle response
+        if (response.IsSuccessStatusCode)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "İlan başarıyla kaydedildi.");
+            NavigationManager.NavigateTo("/araclar");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "İlan kaydedilirken bir hata oluştu.");
+        }
+    }
+
+    private async Task SaveSecondHandListing()
+    {
+        var response = await Http.PostAsJsonAsync("http://localhost:8000/listing/saveikinciel", secondHandListing);
+        // Handle response
+        if (response.IsSuccessStatusCode)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "İlan başarıyla kaydedildi.");
+            NavigationManager.NavigateTo("/ikinci_el");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "İlan kaydedilirken bir hata oluştu.");
+        }
+    }
+
+    private async Task SavePropertyListing()
+    {
+        var response = await Http.PostAsJsonAsync("http://localhost:8000/listing/saveproperty", propertyListing);
+        // Handle response
+        if (response.IsSuccessStatusCode)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "İlan başarıyla kaydedildi.");
+            NavigationManager.NavigateTo("/emlak");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "İlan kaydedilirken bir hata oluştu.");
+        }
+    }
+
+    public class CarListing
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string Category { get; set; } = "Araba";
+        public int Price { get; set; }
+        public DateTime Date { get; set; }
+        public string ImageFileName { get; set; }
+        public string Brand { get; set; }
+        public string Model { get; set; }
+        public int Year { get; set; }
+        public int Km { get; set; }
+        public string FuelType { get; set; }
+        public string GearType { get; set; }
+        public string Color { get; set; }
+        public int EngineSize { get; set; }
+        public int HorsePower { get; set; }
+        public string BodyType { get; set; }
+    }
+
+    public class SecondHandListing
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string Category { get; set; } = "ikinci_el";
+        public int Price { get; set; }
+        public DateTime Date { get; set; }
+        public string ImageFileName { get; set; }
+        public string Brand { get; set; }
+        public string Type { get; set; }
+        public string Condition { get; set; }
+    }
+
+    public class PropertyListing
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string Category { get; set; } = "emlak";
+        public int Price { get; set; }
+        public DateTime Date { get; set; }
+        public string ImageFileName { get; set; }
+        public int M2 { get; set; }
+        public int RoomCount { get; set; }
+        public int Age { get; set; }
+        public int Floor { get; set; }
+        public string HeatingType { get; set; }
+        public string BuildingType { get; set; }
+        public string Location { get; set; }
+        public string Status { get; set; }
+    }
+}

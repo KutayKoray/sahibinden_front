@@ -33,21 +33,25 @@
         }
         else
         {
-            <div class="dropdown">
-                <button class="dropbtn">Profil</button>
-                <a href=""></a>
-                <a href=""></a>
-                <div class="dropdown-content">
-                    <p>@userService.Username</p>
-                    <a href="/favoriler">Favoriler</a>
-                    <a href="/ilanlarim">İlanlarım</a>
-                    <a href="/" @onclick="Logout">Çıkış Yap</a>
+            <div class="dropmenu">
+                <button class="ilan_ekle" @onclick="NavigateToIlan_Ekle">İlan Ekle</button>
+                <div class="dropdown">
+                    <button class="dropbtn">Profil</button>
+                    <a href=""></a>
+                    <a href=""></a>
+                    <div class="dropdown-content">
+                        <p>@userService.Username</p>
+                        <a href="/favoriler">Favoriler</a>
+                        <a href="/ilanlarim">İlanlarım</a>
+                        <a href="/" @onclick="Logout">Çıkış Yap</a>
 
-                </div>
-            </div>            
+                    </div>
+                </div>            
+            </div>
         }
     </div>
 </header>
+
 
 @code {
     private bool firstRender = true;
@@ -67,5 +71,10 @@
         userService.Username = null;
         JsRuntime.InvokeVoidAsync("localStorage.removeItem", "username");
         StateHasChanged();
+    }
+
+    private void NavigateToIlan_Ekle()
+    {
+        NavigationManager.NavigateTo("/ilan_ekle");
     }
 }

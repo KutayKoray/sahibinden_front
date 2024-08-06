@@ -1,0 +1,103 @@
+
+@using JsonSerializer = System.Text.Json.JsonSerializer
+@inject NavigationManager NavigationManager
+
+<link rel="stylesheet" href="css/emlak.css">
+<div class="main-container">
+    <NavBarLayout/> 
+    <div class="content-area">
+        <LeftBarLayout/>
+        <br>
+        <br>
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-9">
+                    <div class="row">
+                        @foreach (var listing in listings)
+                        {
+                        <div class="col-md-12 mb-4">
+                            <div class="card">
+                                <img src="@listing.imageFileName" class="card-img-top" alt="...">
+                                <div class="card-body">
+                                    <h5 class="card-title">@listing.title</h5>
+                                    <p class="card-text description">@listing.description</p>
+                                </div>
+                                <div class="cardFooter">
+                                    <p class="price">@listing.price</p>
+                                    <a href="#" class="btn btn-primary">Detaylar</a>
+                                </div>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+          </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@code {
+    private string _selectedCategory;
+    private List<string> categories = new List<string>();
+    private string _currentUrl;
+    private string _currentCategory;
+    private string jsonString;
+    private List<Listing> listings = new List<Listing>();
+    
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _currentUrl = NavigationManager.Uri;
+        _currentCategory = _currentUrl.Split("/").Last();
+        Console.WriteLine(_currentCategory);
+        await GetCategories();
+    }
+
+    private string GetCategoryClass(string category)
+    {
+        return _selectedCategory == category ? "selected" : "";
+    }
+
+    private async Task GetCategories()
+    {
+        try
+        {
+            var response = await Http.GetAsync($"http://localhost:8000/listing/category/{_currentCategory}");
+            response.EnsureSuccessStatusCode();
+            jsonString = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Received JSON: {jsonString}");
+            listings = JsonSerializer.Deserialize<List<Listing>>(jsonString);
+            foreach (var listing in listings)
+            {
+                Console.WriteLine($"Listing: {listing.id}");
+            }
+            
+            
+        }
+        catch (HttpRequestException e)
+        {
+            Console.WriteLine($"HTTP Request Error: {e.Message}");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Unexpected Error: {e.Message}");
+        }
+    }
+    
+    public class Listing
+    {
+        public int id { get; set; }
+        public string category { get; set; }
+        public string title { get; set; }
+        public int price { get; set; }
+        public string description { get; set; }
+        public string date { get; set; }
+        public string imageFileName { get; set; }
+    }
+
+}

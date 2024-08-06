@@ -18,6 +18,7 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<UserService>();
 
 
+
 // Add authentication services
 builder.Services.AddAuthentication("YourScheme")
     .AddCookie("YourScheme", options =>

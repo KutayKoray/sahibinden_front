@@ -59,6 +59,8 @@
             Password = password
         };
 
+        Console.WriteLine(username);
+
         try
         {
             var response = await Http.PostAsJsonAsync("http://localhost:8000/user/login", data);
